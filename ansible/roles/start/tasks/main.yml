@@ -1,0 +1,38 @@
+---
+- name: Check update package
+  apt:
+    update_cache: yes
+
+- name: Upgrade all packages
+  apt:
+    upgrade: full
+
+- name: Install standart programm
+  apt: 
+    name:
+      - mc
+      - htop
+      - vim
+      - sudo
+      - neofetch
+      - curl
+    state: latest
+
+- name: Create user owner
+  user:
+    name: '{{ owner }}'
+    password: '$6$cf5c351iaT1IwjVs$zVVsJy.lkCGF0iJV04KW9mPrDBIfIvS6C9sGte.QsvpEVWnX9CyKbEPCIdG9DjrTpAQPmfRaKXD2CxWUxhkOf0'
+    group: sudo
+
+- name: Copy config Vim for root
+  copy:
+    src: .vimrc
+    dest: /root/.vimrc
+    mode: '0664'
+
+- name: Copy config Vim for owner
+  copy:
+    src: .vimrc
+    dest: /home/{{ owner }}/.vimrc
+    mode: '0664'
+

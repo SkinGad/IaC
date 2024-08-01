@@ -1,0 +1,48 @@
+---
+- name: Check update package
+  apt:
+    update_cache: yes
+
+- name: Upgrade all packages
+  apt:
+    upgrade: full
+
+- name: Install curl
+  apt: 
+    name:
+      - curl
+    state: latest
+
+- name: Download install script
+  uri:
+    url: 'https://get.docker.com'
+    method: GET
+    dest: get-docker.sh
+    follow_redirects: safe
+  register: result
+
+- name: Install Docker
+  shell: sh ./get-docker.sh
+  
+- name: Remove install script
+  file:
+    path: ./get-docker.sh
+    state: absent
+
+- name: Install docker-compose
+  apt: 
+    name:
+      - docker-compose
+    state: latest
+
+- name: User add group
+  user:
+    name: '{{ owner }}'
+    append: true
+    groups: docker
+
+- name: Restart docker
+  systemd_service:
+    name: docker
+    state: restarted
+    enabled: true
