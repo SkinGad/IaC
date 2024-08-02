@@ -17,4 +17,4 @@ for i in $(terraform -chdir=./terraform output -json vm_ipv4_address | jq -r '.[
   echo "$i owner=\"$1\"" >> ./ansible/inventory.ini
 done
 
-ansible-playbook ./ansible/start.yaml
+# ansible-playbook ./ansible/start.yaml

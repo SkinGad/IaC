@@ -13,6 +13,11 @@
       - curl
     state: latest
 
+- name: Check if Docker is installed
+  command: docker --version
+  register: docker_installed
+  failed_when: false
+
 - name: Download install script
   uri:
     url: 'https://get.docker.com'
@@ -20,14 +25,17 @@
     dest: get-docker.sh
     follow_redirects: safe
   register: result
+  when: docker_installed.rc != 0
 
 - name: Install Docker
   shell: sh ./get-docker.sh
+  when: docker_installed.rc != 0
   
 - name: Remove install script
   file:
     path: ./get-docker.sh
     state: absent
+  when: docker_installed.rc != 0
 
 - name: Install docker-compose
   apt: 
@@ -40,9 +48,11 @@
     name: '{{ owner }}'
     append: true
     groups: docker
+  register: add_group_docker
 
 - name: Restart docker
   systemd_service:
     name: docker
     state: restarted
     enabled: true
+  when: add_group_docker.changed

@@ -68,12 +68,3 @@ output "vm_ipv4_address" {
     vm.ipv4_addresses[index(vm.network_interface_names, "eth0")][0]
   ]
 }
-
-resource "null_resource" "write_inventory_file" {
-  provisioner "local-exec" {
-    command = <<EOF
-      terraform output -json vm_ipv4_address | jq -r '.[]' > output.txt
-      EOF
-  }
-}
-
